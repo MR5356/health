@@ -22,6 +22,30 @@ type HostInfo struct {
 	Port       uint16 `json:"port"`
 	Username   string `json:"username"`
 	Password   string `json:"password"`
+	Passphrase string `json:"passphrase"`
+}
+
+func (h *HostInfo) GetAuthMethods() []ssh.AuthMethod {
+	authMethods := make([]ssh.AuthMethod, 0)
+
+	if len(h.PrivateKey) > 0 {
+		if len(h.Passphrase) > 0 {
+			signer, err := ssh.ParsePrivateKeyWithPassphrase([]byte(h.PrivateKey), []byte(h.Passphrase))
+			if err == nil {
+				authMethods = append(authMethods, ssh.PublicKeys(signer))
+			}
+		} else {
+			signer, err := ssh.ParsePrivateKey([]byte(h.PrivateKey))
+			if err == nil {
+				authMethods = append(authMethods, ssh.PublicKeys(signer))
+			}
+		}
+	}
+
+	if len(h.Password) > 0 {
+		authMethods = append(authMethods, ssh.Password(h.Password))
+	}
+	return authMethods
 }
 
 func NewSSHChecker(hostInfo *HostInfo) *SSHChecker {
@@ -40,21 +64,11 @@ func NewSSHCheckerWithTimeout(hostInfo *HostInfo, timeout time.Duration) *SSHChe
 
 func (sc *SSHChecker) Check() (result *health.Health) {
 	result = health.NewHealth()
-	authMethods := make([]ssh.AuthMethod, 0)
-
-	signer, err := ssh.ParsePrivateKey([]byte(sc.hostInfo.PrivateKey))
-	if err == nil {
-		authMethods = append(authMethods, ssh.PublicKeys(signer))
-	}
-
-	if len(sc.hostInfo.Password) > 0 {
-		authMethods = append(authMethods, ssh.Password(sc.hostInfo.Password))
-	}
 
 	start := time.Now()
 	sshClient, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", sc.hostInfo.Host, sc.hostInfo.Port), &ssh.ClientConfig{
 		User:            sc.hostInfo.Username,
-		Auth:            authMethods,
+		Auth:            sc.hostInfo.GetAuthMethods(),
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         sc.timeout,
 	})
