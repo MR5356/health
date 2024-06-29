@@ -1,7 +1,6 @@
 package host
 
 import (
-	"fmt"
 	"github.com/MR5356/health"
 	"github.com/gliderlabs/ssh"
 	"net"
@@ -97,7 +96,6 @@ func TestSSHChecker_Check_Success(t *testing.T) {
 	})
 
 	result := sshChecker.Check()
-	fmt.Println(result)
 	if result.Status != health.StatusUp {
 		t.Errorf("Expected status %s, got %s", health.StatusUp, result.Status)
 	}
@@ -112,7 +110,6 @@ func TestSSHChecker_Check_Failure(t *testing.T) {
 	})
 
 	result := sshChecker.Check()
-	fmt.Println(result)
 	if result.Status != health.StatusDown {
 		t.Errorf("Expected status %s, got %s", health.StatusUp, result.Status)
 	}
@@ -122,7 +119,6 @@ func TestSSHChecker_Check_Failure_PrivateKey(t *testing.T) {
 	sshChecker := NewSSHChecker(hostInfo)
 
 	result := sshChecker.Check()
-	fmt.Println(result)
 	if result.Status != health.StatusDown {
 		t.Errorf("Expected status %s, got %s", health.StatusUp, result.Status)
 	}

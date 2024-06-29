@@ -32,13 +32,13 @@ func TestNewPingCheckerWithTimeout(t *testing.T) {
 }
 
 func TestPingChecker_Check_Success(t *testing.T) {
-	host := "baidu.com"
+	host := "toodo.fun"
 
 	pingChecker := NewPingChecker(host)
 
 	result := pingChecker.Check()
 	if result.Status != health.StatusUp {
-		t.Errorf("Expected status %s, got %s", health.StatusDown, result.Status)
+		t.Errorf("Expected status %s, got %s", health.StatusUp, result.Status)
 	}
 	if !result.HasResult() {
 		t.Errorf("Expected to have result, but got %v", result.GetResult())
