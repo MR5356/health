@@ -10,4 +10,4 @@ deps:  ## Install dependencies
 
 .PHONY: test
 test: deps ## Run tests
-	@go test -v ./... -coverprofile=coverage.out && go tool cover -func=coverage.out && rm -f coverage.out
+	@go test -v ./... -coverprofile=coverage.out && go tool cover -func=coverage.out
