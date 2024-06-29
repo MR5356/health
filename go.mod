@@ -1,6 +1,6 @@
 module github.com/MR5356/health
 
-go 1.23
+go 1.22
 
 require (
 	github.com/MR5356/go-ping v0.0.0-20240628070247-a45544c66640
