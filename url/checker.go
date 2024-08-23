@@ -3,6 +3,7 @@ package url
 import (
 	"github.com/MR5356/health"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -17,13 +18,13 @@ type Result struct {
 }
 
 func NewChecker(url string) *Checker {
-	return &Checker{
-		url:     url,
-		timeout: time.Second * 5,
-	}
+	return NewCheckerWithTimeout(url, time.Second*5)
 }
 
 func NewCheckerWithTimeout(url string, timeout time.Duration) *Checker {
+	if !strings.HasPrefix(url, "https://") && !strings.HasPrefix(url, "http://") {
+		url = "http://" + url
+	}
 	return &Checker{
 		url:     url,
 		timeout: timeout,
